@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="description" content="NEETPulse AI — AI-powered NEET Protest Intelligence Platform. Real-time analysis of protest events, sentiment and participation using Selenium, Gemini AI, Supabase and Power BI." />
+    <title>NEETPulse AI — NEET Protest Intelligence Platform</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&family=Space+Grotesk:wght@400;600&family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Project stylesheet (do not modify this HTML to change the path) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+
+    <!-- Chart.js CDN (used by script.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Minimal meta for theme color -->
+    <meta name="theme-color" content="#021425" />
+  </head>
+
+  <body class="app-dark">
+    <!--
+      Full-screen cinematic loading overlay
+      - JavaScript (static/js/script.js) will:
+      -- animate progress
+      -- reveal messages in sequence
+      -- perform the cinematic fade into the dashboard
+    -->
+    <div id="loading-overlay" class="loading-overlay" role="status" aria-live="polite">
+      <div class="loading-canvas">
+        <!-- Background grid / map / particles are drawn with CSS + Canvas/JS -->
+        <div class="digital-grid" aria-hidden="true"></div>
+        <div class="india-map-outline" aria-hidden="true"></div>
+        <div class="scanning-line" aria-hidden="true"></div>
+        <div class="particles" aria-hidden="true"></div>
+
+        <div class="loading-copy">
+          <h1 class="brand-title">
+            NEETPulse AI
+          </h1>
+          <h2 class="brand-sub">
+            AI‑powered NEET Protest Intelligence Platform
+          </h2>
+
+          <div class="loading-terminal" id="loading-terminal" aria-hidden="true">
+            <ul class="terminal-messages" id="terminal-messages">
+              <li class="msg">Loading Intelligence...</li>
+              <li class="msg">Connecting to Database...</li>
+              <li class="msg">Analysing Protest Data...</li>
+              <li class="msg">Running AI Models...</li>
+              <li class="msg">Preparing Dashboard...</li>
+              <li class="msg">System Ready</li>
+            </ul>
+          </div>
+
+          <div class="loading-progress" aria-hidden="true">
+            <div class="progress-bar-rail" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <div class="progress-bar-fill" id="progress-fill" style="width: 0%"></div>
+            </div>
+            <div class="progress-meta">
+              <span id="progress-percent">0%</span>
+              <span class="progress-status" id="progress-status">Initialising AI Engine</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main application shell -->
+    <div id="app-shell" class="app-shell" hidden>
+      <!-- Top navigation / header -->
+      <header class="top-nav" role="banner">
+        <div class="nav-left">
+          <div class="logo">
+            <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="NEETPulse AI logo" class="logo-img" />
+            <div class="logo-text">
+              <div class="logo-title">NEETPulse AI</div>
+              <div class="logo-sub">Protest Intelligence Platform</div>
+            </div>
+          </div>
+
+          <nav class="nav-links" role="navigation" aria-label="Primary">
+            <a href="#dashboard" class="nav-link">Dashboard</a>
+            <a href="#analytics" class="nav-link">Analytics</a>
+            <a href="#ai-insights" class="nav-link">AI Insights</a>
+            <a href="#dataset" class="nav-link">Dataset</a>
+            <a href="#powerbi" class="nav-link">Power BI</a>
+            <a href="#about" class="nav-link">About</a>
+          </nav>
+        </div>
+
+        <div class="nav-right">
+          <div class="system-meta">
+            <time id="current-date" class="meta-date" aria-hidden="true">—</time>
+            <div class="system-status">
+              <span class="status-dot status-live" aria-hidden="true"></span>
+              <span id="status-text" class="status-text">Live</span>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Cinematic Hero -->
+      <main id="main" role="main">
+        <section id="hero" class="hero-section">
+          <div class="hero-inner">
+            <div class="hero-left">
+              <h1 class="hero-title">
+                NEET Protest Intelligence Dashboard
+              </h1>
+              <p class="hero-subtitle">
+                Real‑time AI‑powered analytics of the 2024 NEET protest movement using Selenium, Gemini AI, Supabase and Power BI.
+              </p>
+
+              <div class="hero-ctas">
+                <button id="launch-dashboard" class="btn btn-primary btn-animated" type="button" aria-label="Explore Dashboard">
+                  <i class="fa-solid fa-rocket"></i> Explore Dashboard
+                </button>
+                <a href="{{ url_for('static', filename='docs/overview.pdf') }}" class="btn btn-ghost" target="_blank" rel="noopener">Platform Overview</a>
+              </div>
+            </div>
+
+            <div class="hero-right">
+              <!-- Small panel showing quick system summary -->
+              <div class="hero-panel glass">
+                <div class="panel-row">
+                  <div class="panel-label">Data Source</div>
+                  <div class="panel-value">Selenium Scraper • neet_protest_dataset.csv</div>
+                </div>
+                <div class="panel-row">
+                  <div class="panel-label">AI Engine</div>
+                  <div class="panel-value">Gemini (configurable)</div>
+                </div>
+                <div class="panel-row">
+                  <div class="panel-label">Dashboard</div>
+                  <div class="panel-value">Power BI (.pbix)</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Statistics cards -->
+        <section id="dashboard" class="stats-section">
+          <h2 class="section-title">Platform Metrics</h2>
+          <div class="stats-grid" role="list" aria-label="Key statistics">
+            <div class="stat-card" role="listitem" data-key="total_events" aria-live="polite">
+              <div class="stat-icon"><i class="fa-solid fa-calendar-days"></i></div>
+              <div class="stat-body">
+                <div class="stat-label">Total Events</div>
+                <div class="stat-value" id="stat-total-events">—</div>
+                <div class="stat-note">Aggregated protest events</div>
+              </div>
+            </div>
+
+            <div class="stat-card" role="listitem" data-key="total_participants">
+              <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
+              <div class="stat-body">
+                <div class="stat-label">Total Participants</div>
+                <div class="stat-value" id="stat-total-participants">—</div>
+                <div class="stat-note">Estimated participants across reports</div>
+              </div>
+            </div>
+
+            <div class="stat-card" role="listitem" data-key="locations_covered">
+              <div class="stat-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+              <div class="stat-body">
+                <div class="stat-label">Locations Covered</div>
+                <div class="stat-value" id="stat-locations-covered">—</div>
+                <div class="stat-note">Distinct states & districts</div>
+              </div>
+            </div>
+
+            <div class="stat-card" role="listitem" data-key="avg_sentiment">
+              <div class="stat-icon"><i class="fa-solid fa-face-smile"></i></div>
+              <div class="stat-body">
+                <div class="stat-label">Average Sentiment</div>
+                <div class="stat-value" id="stat-average-sentiment">—</div>
+                <div class="stat-note">AI‑calculated sentiment score</div>
+              </div>
+            </div>
+
+            <div class="stat-card" role="listitem" data-key="news_articles">
+              <div class="stat-icon"><i class="fa-solid fa-newspaper"></i></div>
+              <div class="stat-body">
+                <div class="stat-label">News Articles</div>
+                <div class="stat-value" id="stat-news-articles">—</div>
+                <div class="stat-note">Unique articles analysed</div>
+              </div>
+            </div>
+
+            <div class="stat-card" role="listitem" data-key="ai_confidence">
+              <div class="stat-icon"><i class="fa-solid fa-brain"></i></div>
+              <div class="stat-body">
+                <div class="stat-label">AI Confidence Score</div>
+                <div class="stat-value" id="stat-ai-confidence">—</div>
+                <div class="stat-note">Model confidence (0‑100%)</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Analytics grid with placeholders for charts and visualisations -->
+        <section id="analytics" class="analytics-section">
+          <h2 class="section-title">Analytics</h2>
+
+          <div class="analytics-grid">
+            <div class="card glass chart-card" id="chart-sentiment" aria-label="Sentiment analysis container">
+              <div class="card-header">
+                <h3>Sentiment Analysis</h3>
+                <div class="card-actions"></div>
+              </div>
+              <div class="card-body">
+                <!-- Chart.js canvas (populated by static/js/script.js) -->
+                <canvas id="sentiment-chart" aria-hidden="true"></canvas>
+              </div>
+            </div>
+
+            <div class="card glass chart-card" id="chart-participants">
+              <div class="card-header">
+                <h3>Participants by Location</h3>
+              </div>
+              <div class="card-body">
+                <canvas id="participants-chart" aria-hidden="true"></canvas>
+              </div>
+            </div>
+
+            <div class="card glass timeline-card" id="chart-timeline">
+              <div class="card-header">
+                <h3>Timeline</h3>
+              </div>
+              <div class="card-body">
+                <div id="timeline-visual" class="placeholder-visual" aria-hidden="true"></div>
+              </div>
+            </div>
+
+            <div class="card glass heatmap-card" id="chart-heatmap">
+              <div class="card-header">
+                <h3>Heatmap</h3>
+              </div>
+              <div class="card-body">
+                <div id="heatmap-visual" class="placeholder-visual" aria-hidden="true"></div>
+              </div>
+            </div>
+
+            <div class="card glass recent-events" id="recent-events">
+              <div class="card-header">
+                <h3>Recent Events</h3>
+              </div>
+              <div class="card-body">
+                <div id="recent-list" class="events-list" aria-live="polite">
+                  <!-- JavaScript will populate recent events -->
+                </div>
+              </div>
+            </div>
+
+            <div class="card glass powerbi-card" id="powerbi">
+              <div class="card-header">
+                <h3>Power BI Dashboard</h3>
+              </div>
+              <div class="card-body">
+                <!-- Placeholder for Power BI embed; script.js will later mount the embed -->
+                <div id="powerbi-container" class="powerbi-placeholder" aria-hidden="true">
+                  Power BI dashboard will be embedded here.
+                </div>
+                <div class="card-footer">
+                  <a id="download-pbix" class="btn btn-link" href="{{ url_for('static', filename='dashboards/visualchart.pbix') }}" download>Download .pbix</a>
+                  <a id="open-pdf" class="btn btn-link" href="{{ url_for('static', filename='dashboards/visualchart.pdf') }}" target="_blank" rel="noopener">Open PDF</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- AI Insights -->
+        <section id="ai-insights" class="ai-section">
+          <h2 class="section-title">AI Insight Engine</h2>
+          <div class="ai-grid">
+            <div class="ai-panel glass" aria-label="AI assistant">
+              <div class="ai-header">
+                <h3>Ask Gemini AI</h3>
+                <p class="ai-sub">Powered by Google Gemini (configurable). Example prompts: "Which state had the highest participation?" "Summarise overall sentiment."</p>
+              </div>
+
+              <form id="ai-form" class="ai-form" role="search" aria-label="Ask the AI">
+                <label for="ai-input" class="visually-hidden">Ask the AI about the protest data</label>
+                <input id="ai-input" name="query" class="ai-input" type="text" placeholder="Ask anything about the protest data..." autocomplete="off" aria-required="true" />
+                <button id="ai-submit" type="submit" class="btn btn-primary">
+                  <i class="fa-solid fa-microchip"></i> Ask
+                </button>
+              </form>
+
+              <div class="ai-response" id="ai-response" aria-live="polite">
+                <!-- AI responses will be appended here as chat bubbles -->
+              </div>
+            </div>
+
+            <div class="pipeline-panel glass" aria-label="Data pipeline">
+              <h3>Data Pipeline</h3>
+              <ol class="pipeline-steps">
+                <li><span class="step-name">Selenium Scraper</span><span class="step-arrow">→</span></li>
+                <li><span class="step-name">Data Cleaning</span><span class="step-arrow">→</span></li>
+                <li><span class="step-name">Supabase</span><span class="step-arrow">→</span></li>
+                <li><span class="step-name">Power BI</span><span class="step-arrow">→</span></li>
+                <li><span class="step-name">Gemini AI</span><span class="step-arrow">→</span></li>
+                <li><span class="step-name">Insights</span></li>
+              </ol>
+            </div>
+          </div>
+        </section>
+
+        <!-- Dataset -->
+        <section id="dataset" class="dataset-section">
+          <h2 class="section-title">Dataset</h2>
+          <p class="muted">The raw, cleaned dataset collected by the Selenium scraper. Use for reproducible analysis and audits.</p>
+          <div class="dataset-actions">
+            <a class="btn btn-primary" href="{{ url_for('download_data') }}" id="download-dataset" role="button">Download Dataset</a>
+            <a class="btn btn-ghost" href="{{ url_for('static', filename='data/ne et_protest_dataset.csv') }}" target="_blank" rel="noopener">Open CSV</a>
+          </div>
+        </section>
+
+        <!-- About / Footer -->
+        <footer id="about" class="site-footer">
+          <div class="footer-inner">
+            <div class="footer-left">
+              <div class="footer-brand">
+                <img src="{{ url_for('static', filename='images/logo-mark.svg') }}" alt="" class="footer-logo" />
+                <div>
+                  <div class="brand">NEETPulse AI</div>
+                  <div class="byline">AI‑powered public intelligence for protest analysis</div>
+                </div>
+              </div>
+
+              <p class="small muted">This project organises public reporting to provide research-grade analytics and assist policy and civil-society stakeholders. The platform combines automated scraping, human‑reviewed cleaning and AI summarisation. Use responsibly and verify before action.</p>
+            </div>
+
+            <div class="footer-right">
+              <div class="tech-stack">
+                <h4>Technology</h4>
+                <ul class="tech-list">
+                  <li>Python • Flask</li>
+                  <li>Selenium</li>
+                  <li>Supabase</li>
+                  <li>Google Gemini AI</li>
+                  <li>Power BI</li>
+                  <li>GitHub • GitHub Copilot</li>
+                </ul>
+              </div>
+
+              <div class="links">
+                <a class="small link" href="https://github.com/{{ config.get('GITHUB_REPO', '') }}" target="_blank" rel="noopener">View on GitHub</a>
+                <a class="small link" href="/LICENSE" target="_blank" rel="noopener">License</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="footer-bottom">
+            <div class="copyright">&copy; 2024 NEETPulse AI. All rights reserved.</div>
+            <div class="attribution">Designed for research and analytics — not a substitute for official sources.</div>
+          </div>
+        </footer>
+      </main>
+    </div>
+
+    <!-- Project scripts (do not modify this HTML to change the path) -->
+    <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+  </body>
+</html>
